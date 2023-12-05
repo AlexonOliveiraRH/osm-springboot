@@ -1,0 +1,41 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: caller-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "springboot-caller-gateway-684888c0ebb17f37-istio-system.apps.cluster-rvbjh.rvbjh.sandbox2696.opentlc.com"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: caller-service-destination
+spec:
+  host: caller-service
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: caller-service-route
+spec:
+  hosts:
+    - "springboot-caller-gateway-684888c0ebb17f37-istio-system.apps.cluster-rvbjh.rvbjh.sandbox2696.opentlc.com"
+  gateways:
+    - caller-gateway
+  http:
+    - route:
+        - destination:
+            host: caller-service
+            subset: v1
+      timeout: 0.5s
