@@ -13,6 +13,8 @@ spec:
       labels:
         app: caller-service
         version: v1
+      annotations:
+        sidecar.istio.io/inject: 'true'
     spec:
       containers:
       - name: caller-service

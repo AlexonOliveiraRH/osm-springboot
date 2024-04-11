@@ -11,7 +11,7 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - "springboot-caller-gateway-684888c0ebb17f37-istio-system.apps.cluster-rvbjh.rvbjh.sandbox2696.opentlc.com"
+        - '*'
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
@@ -23,6 +23,9 @@ spec:
     - name: v1
       labels:
         version: v1
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -30,7 +33,7 @@ metadata:
   name: caller-service-route
 spec:
   hosts:
-    - "springboot-caller-gateway-684888c0ebb17f37-istio-system.apps.cluster-rvbjh.rvbjh.sandbox2696.opentlc.com"
+    - '*'
   gateways:
     - caller-gateway
   http:
@@ -39,3 +42,8 @@ spec:
             host: caller-service
             subset: v1
       timeout: 0.5s
+      match:
+        - uri:
+            prefix: /caller
+        - uri:
+            exact: /caller/ping
